@@ -3,5 +3,5 @@
 src/obj
 src/bin
 bin/
-libs/
-unity/
+libs/*.dll
+unity/*.dll

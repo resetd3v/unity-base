@@ -66,6 +66,9 @@
     <Reference Include="BepInEx.Unity.Mono">
       <HintPath>..\libs\BepInEx.Unity.Mono.dll</HintPath>
     </Reference>
+    <Reference Include="com.rlabrecque.steamworks.net">
+      <HintPath>..\libs\com.rlabrecque.steamworks.net.dll</HintPath>
+    </Reference>
     <Reference Include="ComputerysModdingUtilities">
       <HintPath>..\libs\ComputerysModdingUtilities.dll</HintPath>
     </Reference>
@@ -121,22 +124,29 @@
     <WCFMetadata Include="Connected Services\" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="comm.cs" />
     <Compile Include="config.cs" />
-    <Compile Include="features\impl\bypi.cs" />
-    <Compile Include="features\impl\combat\aim.cs" />
-    <Compile Include="features\impl\exploit\aidsitems.cs" />
-    <Compile Include="features\impl\player\respawn.cs" />
-    <Compile Include="features\impl\player\restrictions.cs" />
-    <Compile Include="features\impl\render\esp.cs" />
-    <Compile Include="features\impl\render\espold.cs" />
-    <Compile Include="features\modulemanager.cs" />
-    <Compile Include="features\module.cs" />
+    <Compile Include="features\modules\impl\combat\aim.cs" />
+    <Compile Include="features\modules\impl\exploit\aidsitems.cs" />
+    <Compile Include="features\modules\impl\exploit\autoready.cs" />
+    <Compile Include="features\modules\impl\exploit\destroy.cs" />
+    <Compile Include="features\modules\impl\exploit\dor.cs" />
+    <Compile Include="features\modules\impl\player\respawn.cs" />
+    <Compile Include="features\modules\impl\player\restrictions.cs" />
+    <Compile Include="features\modules\impl\render\esp.cs" />
+    <Compile Include="features\modules\impl\render\espold.cs" />
+    <Compile Include="features\modules\module.cs" />
+    <Compile Include="handlers\bypi.cs" />
+    <Compile Include="handlers\comm.cs" />
+    <Compile Include="handlers\commandmanager.cs" />
+    <Compile Include="handlers\modulemanager.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="render\render.cs" />
     <Compile Include="utils\cache.cs" />
-    <Compile Include="utils\render.cs" />
     <Compile Include="utils\utils.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="features\commands\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
