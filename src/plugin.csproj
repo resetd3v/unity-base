@@ -87,8 +87,14 @@
     <Reference Include="System" />
     <Reference Include="System.Net" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="Unity.TextMeshPro">
+      <HintPath>..\libs\Unity.TextMeshPro.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>..\libs\UnityEngine.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.AnimationModule">
+      <HintPath>..\libs\UnityEngine.AnimationModule.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.AssetBundleModule, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -130,6 +136,7 @@
     <Compile Include="features\modules\impl\exploit\autoready.cs" />
     <Compile Include="features\modules\impl\exploit\destroy.cs" />
     <Compile Include="features\modules\impl\exploit\dor.cs" />
+    <Compile Include="features\modules\impl\exploit\godeveryone.cs" />
     <Compile Include="features\modules\impl\player\respawn.cs" />
     <Compile Include="features\modules\impl\player\restrictions.cs" />
     <Compile Include="features\modules\impl\render\esp.cs" />
@@ -138,6 +145,7 @@
     <Compile Include="handlers\bypi.cs" />
     <Compile Include="handlers\comm.cs" />
     <Compile Include="handlers\commandmanager.cs" />
+    <Compile Include="handlers\inject.cs" />
     <Compile Include="handlers\modulemanager.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

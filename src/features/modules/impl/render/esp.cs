@@ -50,14 +50,14 @@ public class esp : Module
         List<GameObject> players = GetPlayers();
         players.ForEach((playerGo) =>
         {
-            PlayerValues player = playerGo.GetComponent<PlayerValues>();
+            PlayerHealth playerHealth = playerGo.GetComponent<PlayerHealth>();
+            
+            PlayerValues player = playerHealth?.playerValues;
             // self check
             // if (player.playerClient == ClientInstance.Instance) return;
             if (!player || playerGo == Cache.selfPlayer) return;
-        
-            PlayerHealth playerHealth = playerGo.GetComponent<PlayerHealth>();
-            float health = Mathf.Ceil(playerHealth.health / 4f * 100f);
             
+            float health = Mathf.Ceil(playerHealth.health / 4f * 100f);
             // dead
             if (playerHealth.isKilled || playerHealth.health <= 0) return;
         
@@ -66,12 +66,19 @@ public class esp : Module
             // int count Mathf.Round(playerHealth.count);
             
             Vector3 head = player.transform.position;
-            FieldInfo fi2 = player.GetType().GetField("head", 
-                 BindingFlags.NonPublic | BindingFlags.Instance);
-             if (fi2 != null)
-             {
-                 head = ((Transform) fi2.GetValue(player)).position;
-             }
+            FieldInfo fi2 = playerHealth.controller.GetType().GetField("animator",
+                BindingFlags.NonPublic | BindingFlags.Instance);
+            if (fi2 != null)
+            {
+                head = ((Animator) fi2.GetValue(playerHealth.controller)).GetBoneTransform(HumanBodyBones.Head).position;
+            }
+            // Vector3 head = player.transform.position;
+            // FieldInfo fi2 = player.GetType().GetField("head", 
+            //      BindingFlags.NonPublic | BindingFlags.Instance);
+            //  if (fi2 != null)
+            //  {
+            //      head = ((Transform) fi2.GetValue(player)).position;
+            //  }
              
             Vector3 headPos = camera.WorldToScreenPoint(head);   //player.player.transform.position);
             headPos.y = Screen.height - headPos.y;
@@ -95,7 +102,7 @@ public class esp : Module
         });
         #endregion
         
-        // #region items
+        #region items
         // List<ItemBehaviour> items = GetItems();
         // items.ForEach(item =>
         // {
@@ -109,8 +116,7 @@ public class esp : Module
         //     
         //     Render.DrawString(pos, txt);
         // });
-        // #endregion
-        //
+        #endregion
 
         #region spawners
         // List<ItemSpawner> spawners = GetSpawners();

@@ -21,11 +21,12 @@ public class Aim : Module
 
     
     public Camera camera;
-    public static int layerMask = 11;
+    public static LayerMask layerMask = 2049; //18103;//67656;//2049;//11;
 
     // erm so i can access my modules classes from unity explorer but just not erm properly (they are bugged as destroyed prob cuz they extend monobehav)
     // so static abuse here to "debug" and "config"
     public static float fov = 100f;
+    public static float headOffset = 0.15f;
     public static float baseSmoothing = 1; //2
     public static float minSmoothing = 0.5f;
     public static float maxSmoothing = 5f;
@@ -56,27 +57,36 @@ public class Aim : Module
             PlayerHealth playerHealth = player.gameObject.GetComponent<PlayerHealth>();
             // dead
             if (!playerHealth || playerHealth.isKilled || playerHealth.health <= 0) continue;
-            
-            PlayerValues pv = player.GetComponent<PlayerValues>();
+
+            PlayerValues pv = playerHealth.playerValues; //player.GetComponent<PlayerValues>();
             if (!pv) continue;
             if (TeamCheck(Cache.selfPlayer.GetComponent<PlayerValues>(), pv)) continue;
             
+            FirstPersonController fps =  player.GetComponent<FirstPersonController>();
+
+            // Vector3 head = pv.transform.position;
+            // FieldInfo fi2 = pv.GetType().GetField("head",
+            //     BindingFlags.NonPublic | BindingFlags.Instance);
+            // if (fi2 != null)
+            // {
+            //     head = ((Transform) fi2.GetValue(pv)).position;
+            // }
             Vector3 head = pv.transform.position;
-            FieldInfo fi2 = pv.GetType().GetField("head",
+            FieldInfo fi2 = playerHealth.controller.GetType().GetField("animator",
                 BindingFlags.NonPublic | BindingFlags.Instance);
             if (fi2 != null)
             {
-                head = ((Transform) fi2.GetValue(pv)).position;
+                head = ((Animator) fi2.GetValue(playerHealth.controller)).GetBoneTransform(HumanBodyBones.Head).position;
             }
 
-            head.y -= 1;
+            head.y -= headOffset;
             Vector3 screenPos = camera.WorldToScreenPoint(head);
             screenPos.y = Screen.height - screenPos.y;
             if (screenPos.z <= 0) continue;
         
-            float fovDist = Math.Abs(Vector2.Distance(new Vector2(screenPos.x, Screen.height - screenPos.y), new Vector2((Screen.width / 2), (Screen.height / 2))));
+            float fovDist = Math.Abs(Vector2.Distance(new Vector2(screenPos.x, screenPos.y), new Vector2((Screen.width / 2), (Screen.height / 2)))); //Screen.height - 
             if (fovDist > fov) continue;
-            if (!VisibleCheck(camera.transform.position, head)) continue;
+            if (!VisibleCheck(camera.transform.position, camera.transform.forward)) continue;
             if (fovDist > curDist) continue;
         
             curDist = fovDist;
@@ -109,24 +119,22 @@ public class Aim : Module
 
     private void DrawTarg()
     {
-        PlayerValues pv = Cache.aimTarg.GetComponent<PlayerValues>();
+        PlayerHealth playerHealth = Cache.aimTarg.GetComponent<PlayerHealth>();
         
-        Vector3 head = pv.transform.position;
-        FieldInfo fi2 = pv.GetType().GetField("head",
+        Vector3 head = playerHealth.transform.position;
+        FieldInfo fi2 = playerHealth.controller.GetType().GetField("animator",
             BindingFlags.NonPublic | BindingFlags.Instance);
         if (fi2 != null)
         {
-            head = ((Transform) fi2.GetValue(pv)).position;
+            head = ((Animator) fi2.GetValue(playerHealth.controller)).GetBoneTransform(HumanBodyBones.Head).position;
         }
         
-        head.y -= 1;
+        head.y -= headOffset;
         Vector3 pos = camera.WorldToScreenPoint(head);
         pos.y = Screen.height - pos.y;
         if (pos.z <= 0) return;
         
-        PlayerHealth playerHealth = Cache.aimTarg.gameObject.GetComponent<PlayerHealth>();
-        
-        Render.DrawString(new Vector2(Screen.width/2  + 25, Screen.height/2  + 10), pv.playerClient.PlayerName);
+        Render.DrawString(new Vector2(Screen.width/2  + 25, Screen.height/2  + 10), playerHealth.playerValues.playerClient.PlayerName);
         Render.DrawString(new Vector2(Screen.width/2  + 25, Screen.height/2  + 25), Mathf.Ceil(playerHealth.health / 4f * 100f).ToString());
         Render.DrawLine(new Vector2(Screen.width/2, Screen.height/2), pos, (Input.GetKey(KeyCode.Mouse4)) ? Color.red : Color.magenta, 1f);
     }
@@ -155,11 +163,17 @@ public class Aim : Module
     }
 
     // fuck this shit
+    // raycastHit2.transform.root.TryGetComponent<PlayerHealth>(out this.enemyHealth) dmg indicators
     private bool VisibleCheck(Vector3 startPos, Vector3 targetPos)
     {
-        // RaycastHit hit;
-        return true;
-        // return Physics.Raycast(startPos, targetPos, out hit, 999f, layerMask);
+        // return true;
+        // Debug.DrawRay(startPos, new Vector3(targetPos.x, 0f, targetPos.z), Color.red, 1f);
+        return Physics.Raycast(startPos, targetPos, out RaycastHit hit, float.PositiveInfinity, layerMask) &&
+               (hit.transform.root.CompareTag("Player")
+                   ? hit.transform.root.TryGetComponent<PlayerHealth>(out PlayerHealth ph) ? 1 : 0
+                   : hit.transform.GetComponentInParent<PlayerHealth>() ? 1 : 0
+               ) != 0;
+        // return Physics.Raycast(startPos, targetPos, out hit, float.PositiveInfinity, layerMask);
         //return Physics.Raycast(startPos, targetPos, 9999f);
     }
     
